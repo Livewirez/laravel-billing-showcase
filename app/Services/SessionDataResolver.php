@@ -9,7 +9,7 @@ class SessionDataResolver
 {
     public static function get(Request $request, string $key): ?Model
     {
-        if (app()->environment('production')) {
+        if (app()->environment('production') || config('app.force_session_model_storage')) {
             return match ($key) {
                 'selected_plan' => \Livewirez\Billing\Billing::$billingPlan::findOrFail($request->session()->get('selected_plan')),
                 'selected_plan_price' => \Livewirez\Billing\Billing::$billingPlanPrice::findOrFail($request->session()->get('selected_plan_price')),
@@ -28,7 +28,7 @@ class SessionDataResolver
 
     public static function put(Request $request, string $key, Model $model)
     {
-        if (app()->environment('production')) {
+        if (app()->environment('production') || config('app.force_session_model_storage')) {
             return match ($key) {
                 'selected_plan' => $request->session()->put('selected_plan', $model->id),
                 'selected_plan_price' => $request->session()->put('selected_plan_price', $model->id),

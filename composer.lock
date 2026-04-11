@@ -2445,16 +2445,16 @@
         },
         {
             "name": "livewirez/livewirez-billing-laravel",
-            "version": "v0.13.3",
+            "version": "v0.13.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Livewirez/livewirez-billing-laravel.git",
-                "reference": "8dff657e495de56c65b13be92fbb63f9738d2273"
+                "reference": "47bf0135f4a841daa5b0616e101d4a6623cf91f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Livewirez/livewirez-billing-laravel/zipball/8dff657e495de56c65b13be92fbb63f9738d2273",
-                "reference": "8dff657e495de56c65b13be92fbb63f9738d2273",
+                "url": "https://api.github.com/repos/Livewirez/livewirez-billing-laravel/zipball/47bf0135f4a841daa5b0616e101d4a6623cf91f4",
+                "reference": "47bf0135f4a841daa5b0616e101d4a6623cf91f4",
                 "shasum": ""
             },
             "require": {
@@ -2494,9 +2494,9 @@
             "description": "A laravel package for handling billing and their transactions.",
             "support": {
                 "issues": "https://github.com/Livewirez/livewirez-billing-laravel/issues",
-                "source": "https://github.com/Livewirez/livewirez-billing-laravel/tree/v0.13.3"
+                "source": "https://github.com/Livewirez/livewirez-billing-laravel/tree/v0.13.4"
             },
-            "time": "2026-04-11T22:04:59+00:00"
+            "time": "2026-04-11T22:19:47+00:00"
         },
         {
             "name": "monolog/monolog",

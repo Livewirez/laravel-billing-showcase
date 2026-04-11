@@ -129,4 +129,6 @@ return [
 
     'saved_paypal_email' => env('SAVED_PAYPAL_EMAIL'),
 
+    'force_session_model_storage' => env('APP_FORCE_SESSION_MODEL_STORAGE', false)
+
 ];
