@@ -2,34 +2,35 @@
 
 namespace App\Services\Payments;
 
-use Inertia\Inertia;
-use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
+use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Enum;
+use Inertia\Inertia;
+use Inertia\Response as InertiaResponse;
+use Livewirez\Billing\Actions\CancelPayment;
+use Livewirez\Billing\Actions\CompletePayment;
+use Livewirez\Billing\Actions\CompletePaymentWithToken;
+use Livewirez\Billing\Actions\InitializePayment;
+use Livewirez\Billing\Actions\InitializeSubscription;
+use Livewirez\Billing\Actions\SetupPaymentToken;
+use Livewirez\Billing\Actions\SetupSubscriptionPaymentToken;
+use Livewirez\Billing\Actions\StartSubscription;
+use Livewirez\Billing\Actions\StartSubscriptionWithToken;
+use Livewirez\Billing\Actions\UpdateSubscription;
+use Livewirez\Billing\Enums\PaymentProvider;
+use Livewirez\Billing\Enums\PaymentStatus;
+use Livewirez\Billing\Enums\SubscriptionStatus;
+use Livewirez\Billing\Http\Resources\BillingOrderResource;
 use Livewirez\Billing\Lib\Cart;
 use Livewirez\Billing\Lib\CartItem;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Validation\Rules\Enum;
-use Illuminate\Support\Facades\Redirect;
-use Inertia\Response as InertiaResponse;
-use Livewirez\Billing\Enums\PaymentStatus;
-use Livewirez\Billing\Actions\CancelPayment;
-use Livewirez\Billing\Enums\PaymentProvider;
-use Livewirez\Billing\Models\BillingProduct;
-use Illuminate\Contracts\Support\Responsable;
-use Livewirez\Billing\Actions\CompletePayment;
-use Livewirez\Billing\Actions\InitializePayment;
 use Livewirez\Billing\Models\BillingPlanPrice;
+use Livewirez\Billing\Models\BillingProduct;
+use App\Services\SessionDataResolver;
 use Symfony\Component\HttpFoundation\Response;
-use Livewirez\Billing\Enums\SubscriptionStatus;
-use Livewirez\Billing\Actions\SetupPaymentToken;
-use Livewirez\Billing\Actions\StartSubscription;
-use Livewirez\Billing\Actions\UpdateSubscription;
-use Livewirez\Billing\Actions\InitializeSubscription;
-use Livewirez\Billing\Actions\CompletePaymentWithToken;
-use Livewirez\Billing\Actions\StartSubscriptionWithToken;
-use Livewirez\Billing\Http\Resources\BillingOrderResource;
-use Livewirez\Billing\Actions\SetupSubscriptionPaymentToken;
 
 class PayPalHandler extends PaymentProviderHandler
 {
@@ -86,12 +87,10 @@ class PayPalHandler extends PaymentProviderHandler
             return Redirect::back()->with(['status' => 'failed', 'message' => 'Please a select a plan']);
         }
 
-
         $result = $action->handle(
             $request->user(),
             PaymentProvider::PayPal,
-            is_array($selected_plan_price = $request->session()->get('selected_plan_price')) ? 
-                (new \Livewirez\Billing\Billing::$billingPlanPrice)->findOrFail($selected_plan_price['id']) : $selected_plan_price,
+            SessionDataResolver::get($request, 'selected_plan_price'),
             []
         );
 
@@ -224,11 +223,9 @@ class PayPalHandler extends PaymentProviderHandler
         // $plan      = $request->session()->get('selected_plan');
         // $planPrice = $request->session()->get('selected_plan_price');
 
-        $plan = is_array($selected_plan = $request->session()->get('selected_plan')) ? 
-                (new \Livewirez\Billing\Billing::$billingPlan)->findOrFail($selected_plan['id']) : $selected_plan;
+        $plan = SessionDataResolver::get($request, 'selected_plan');
         
-        $planPrice = is_array($selected_plan_price = $request->session()->get('selected_plan_price')) ? 
-                (new \Livewirez\Billing\Billing::$billingPlanPrice)->findOrFail($selected_plan_price['id']) : $selected_plan_price;
+        $planPrice = SessionDataResolver::get($request, 'selected_plan_price');
 
         if (! $provider && ! $token && ! $payerId && ! $plan && ! $planPrice) {
             \Illuminate\Support\Facades\Log::warning('No Provider in cancel', [__METHOD__ . __LINE__]);
@@ -596,8 +593,8 @@ class PayPalHandler extends PaymentProviderHandler
 
         $userId = $request->user()->id;
 
-        $plan = $request->session()->get('selected_plan');
-        if (($planPrice = $request->session()->get('selected_plan_price')) === null) {
+        $plan = SessionDataResolver::get($request, 'selected_plan');
+        if (($planPrice = SessionDataResolver::get($request, 'selected_plan_price')) === null) {
 
             \Illuminate\Support\Facades\Log::error('Plan Price not in session');
 
@@ -605,12 +602,6 @@ class PayPalHandler extends PaymentProviderHandler
 
             return Redirect::route('dashboard');
         }
-
-        $plan = is_array($plan) ? 
-                (new \Livewirez\Billing\Billing::$billingPlan)->findOrFail($plan['id']) : $plan;
-        
-        $planPrice = is_array($planPrice) ? 
-                (new \Livewirez\Billing\Billing::$billingPlanPrice)->findOrFail($planPrice['id']) : $planPrice;
 
         // Create a unique lock per user or transaction
         $lock = Cache::lock("subscription-lock:user:{$userId}", 10); // 10 seconds timeout

@@ -165,8 +165,31 @@ export class HttpError extends Error {
     }
 }
 
+type HttpRequestCallbacksExx<K extends keyof XMLHttpRequestEventTargetEventMap> =
+    Partial<{
+        [P in K]: (this: XMLHttpRequest, ev: XMLHttpRequestEventTargetEventMap[P]) => any;
+    }>;
+
+type HttpRequestCallbacksEx = Partial<{
+    [K in keyof XMLHttpRequestEventTargetEventMap]:
+        (this: XMLHttpRequest, ev: XMLHttpRequestEventTargetEventMap[K]) => any;
+}>;
+
+type HttpRequestCallbacks = Omit<Partial<{
+    [K in keyof XMLHttpRequestEventTargetEventMap]:
+        (this: XMLHttpRequest, ev: XMLHttpRequestEventTargetEventMap[K]) => any;
+}>, 'error' | 'timeout'>;
+
+type HttpRequestCallbacksOptions = Partial<{
+    [K in keyof XMLHttpRequestEventTargetEventMap]:
+        {
+            listener: (this: XMLHttpRequest, ev: XMLHttpRequestEventTargetEventMap[K]) => any;
+            options?: boolean | AddEventListenerOptions;
+        }
+}>;
+
 export class HttpRequest {
-    static async fetch(input: RequestInfo | URL, init?: RequestInit): Promise<HttpResponse> {
+    static async fetch(input: RequestInfo | URL, init?: RequestInit,  callbacks: HttpRequestCallbacks = {}): Promise<HttpResponse> {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             
@@ -185,8 +208,18 @@ export class HttpRequest {
                     xhr.setRequestHeader(key, value);
                 });
             }
+    
+            for (const event in callbacks) {
+                const callback = callbacks[event as keyof Omit<XMLHttpRequestEventTargetEventMap, 'error' | 'timeout'>];
+                if (typeof callback === 'function') {
+                    xhr.addEventListener(event, callback as EventListener);
+                }
+            }
             
-            xhr.onreadystatechange = function () {
+            xhr.onreadystatechange = function (ev: Event) {
+
+                console.log('XHR State Change: ', ev);
+                
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     const resHeaders = xhr.getAllResponseHeaders()
                         .split('\r\n')
@@ -279,7 +312,29 @@ export class HttpRequest {
             
             xhr.onerror = function () {
                 console.error('Network error occurred.');
-                reject(new Error('Network error occurred'));
+        
+                let error = null;
+
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    const resHeaders = xhr.getAllResponseHeaders()
+                        .split('\r\n')
+                        .map(v => v.trim().split(':').map(s => s.trim()))
+                        .filter(a => a.length === 2 && a[0] !== '') as [string, string][];
+                    
+                    error = new HttpError(
+                        `HTTP Error: ${xhr.status} ${xhr.statusText}`, 
+                        new HttpResponse(new Response(xhr.responseText, {
+                            status: xhr.status,
+                            statusText: xhr.statusText,
+                            headers: new Headers(resHeaders)
+                        }), xhr.responseText),
+                        { cause: xhr.statusText }
+                    );
+                } else {
+                    error = new Error('Network error occurred');
+                }
+
+                reject(error);
             };
             
             xhr.ontimeout = function () {
@@ -307,11 +362,11 @@ export class HttpRequest {
         });
     }
     
-    static async get(url: string, init?: Omit<RequestInit, 'method'>): Promise<HttpResponse> {
-        return HttpRequest.fetch(url, { ...init, method: 'GET' });
+    static async get(url: string, init?: Omit<RequestInit, 'method'>, callbacks: HttpRequestCallbacks = {}): Promise<HttpResponse> {
+        return HttpRequest.fetch(url, { ...init, method: 'GET' }, callbacks);
     }
     
-    static async post(url: string, data?: BodyInit | Record<string, any> | null, init?: Omit<RequestInit, 'method' | 'body'>): Promise<HttpResponse> {
+    static async post(url: string, data?: BodyInit | Record<string, any> | null, init?: Omit<RequestInit, 'method' | 'body'>, callbacks: HttpRequestCallbacks = {}): Promise<HttpResponse> {
         let body: BodyInit | null = null;
         const headers = new Headers(init?.headers);
         
@@ -331,10 +386,10 @@ export class HttpRequest {
             method: 'POST',
             headers,
             body
-        });
+        }, callbacks);
     }
     
-    static async put(url: string, data?: BodyInit | Record<string, any> | null, init?: Omit<RequestInit, 'method' | 'body'>): Promise<HttpResponse> {
+    static async put(url: string, data?: BodyInit | Record<string, any> | null, init?: Omit<RequestInit, 'method' | 'body'>, callbacks: HttpRequestCallbacks = {}): Promise<HttpResponse> {
         let body: BodyInit | null = null;
         const headers = new Headers(init?.headers);
         
@@ -354,10 +409,33 @@ export class HttpRequest {
             method: 'PUT',
             headers,
             body
-        });
+        }, callbacks);
+    }
+
+     static async patch(url: string, data?: BodyInit | Record<string, any> | null, init?: Omit<RequestInit, 'method' | 'body'>, callbacks: HttpRequestCallbacks = {}): Promise<HttpResponse> {
+        let body: BodyInit | null = null;
+        const headers = new Headers(init?.headers);
+        
+        if (data) {
+            if (data instanceof FormData) {
+                body = data;
+            } else if (typeof data === 'object') {
+                body = JSON.stringify(data);
+                headers.set('Content-Type', 'application/json');
+            } else {
+                body = String(data);
+            }
+        }
+        
+        return HttpRequest.fetch(url, {
+            ...init,
+            method: 'PATCH',
+            headers,
+            body
+        }, callbacks);
     }
     
-    static async delete(url: string, init?: Omit<RequestInit, 'method'>): Promise<HttpResponse> {
-        return HttpRequest.fetch(url, { ...init, method: 'DELETE' });
+    static async delete(url: string, init?: Omit<RequestInit, 'method'>, callbacks: HttpRequestCallbacks = {}): Promise<HttpResponse> {
+        return HttpRequest.fetch(url, { ...init, method: 'DELETE' }, callbacks);
     }
 }

@@ -25,6 +25,7 @@ use Livewirez\Billing\Actions\StartSubscription;
 use Livewirez\Billing\Actions\UpdateSubscription;
 use Livewirez\Billing\Actions\InitializeSubscription;
 use Livewirez\Billing\Http\Resources\BillingOrderResource;
+use App\Services\SessionDataResolver;
 
 class PaddleHandler extends PaymentProviderHandler
 {
@@ -293,8 +294,8 @@ class PaddleHandler extends PaymentProviderHandler
 
         $userId = $request->user()->id;
 
-        $plan = $request->session()->get('selected_plan');
-        if (($planPrice = $request->session()->get('selected_plan_price')) === null && (! $request->session()->has('payment_provider')
+        $plan = SessionDataResolver::get($request, 'selected_plan');
+        if (($planPrice = SessionDataResolver::get($request, 'selected_plan_price')) === null && (! $request->session()->has('payment_provider')
                 && $request->session()->get('payment_provider') !== PaymentProvider::Paddle->value
                 && ! $request->session()->has('paddle_transaction_id')
                 && ! $request->session()->has('billing_subscription_id')
