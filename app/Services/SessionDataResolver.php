@@ -26,8 +26,6 @@ class SessionDataResolver
         };
     }
 
-    // $request->session()->put('selected_plan', $plan);
-       // $request->session()->put('selected_plan_price', $plan_price);
     public static function put(Request $request, string $key, Model $model)
     {
         if (app()->environment('production')) {

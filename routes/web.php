@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Teams\TeamInvitationController;
 use App\Http\Middleware\EnsureTeamMembership;
 use Illuminate\Support\Facades\Route;
+use App\Services\SessionDataResolver;
 use Laravel\Fortify\Features;
 use Livewirez\Billing\Lib\Cart;
 use Livewirez\Billing\Lib\CartItem;
@@ -93,8 +94,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             $plan->billing_plan_payment_provider_information->filter(fn ($bpp) => $bpp->payment_provider === Livewirez\Billing\Enums\PaymentProvider::PayPal)
         );
 
-        $request->session()->put('selected_plan', $plan);
-        $request->session()->put('selected_plan_price', $plan_price);
+        SessionDataResolver::put($request, 'selected_plan', $plan);
+        SessionDataResolver::put($request, 'selected_plan_price', $plan_price);
 
         return Inertia::render('checkout/Plan', [
            'plan' => \Livewirez\Billing\Http\Resources\BillingPlanResource::make($plan)->resolve(),
@@ -118,8 +119,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             $plan->billing_plan_payment_provider_information->filter(fn ($bpp) => $bpp->payment_provider === Livewirez\Billing\Enums\PaymentProvider::PayPal)
         );
       
-        $request->session()->put('selected_plan', $plan);
-        $request->session()->put('selected_plan_price', $plan_price);
+        SessionDataResolver::put($request, 'selected_plan', $plan);
+        SessionDataResolver::put($request, 'selected_plan_price', $plan_price);
 
         return Inertia::render('checkout/PlanV2', [
            'plan' => \Livewirez\Billing\Http\Resources\BillingPlanResource::make($plan)->resolve(),
