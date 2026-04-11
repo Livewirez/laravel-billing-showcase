@@ -16,7 +16,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "^0.1.14",
-        "livewirez/livewirez-billing-laravel": "^0.11.0"
+        "livewirez/livewirez-billing-laravel": "^0.13"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24",

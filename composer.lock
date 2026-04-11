@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f91c1b9de7385d6b2a39cd1473793612",
+    "content-hash": "bc5018667508e7175e891f1397de2846",
     "packages": [
         {
             "name": "archtechx/enums",
@@ -2445,16 +2445,16 @@
         },
         {
             "name": "livewirez/livewirez-billing-laravel",
-            "version": "v0.11",
+            "version": "v0.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Livewirez/livewirez-billing-laravel.git",
-                "reference": "7d0e550e62f4eb50c3301ff864e753e87c491d52"
+                "reference": "1015d087d0b09d2da2966a2f253f6abdb81b625d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Livewirez/livewirez-billing-laravel/zipball/7d0e550e62f4eb50c3301ff864e753e87c491d52",
-                "reference": "7d0e550e62f4eb50c3301ff864e753e87c491d52",
+                "url": "https://api.github.com/repos/Livewirez/livewirez-billing-laravel/zipball/1015d087d0b09d2da2966a2f253f6abdb81b625d",
+                "reference": "1015d087d0b09d2da2966a2f253f6abdb81b625d",
                 "shasum": ""
             },
             "require": {
@@ -2494,9 +2494,9 @@
             "description": "A laravel package for handling billing and their transactions.",
             "support": {
                 "issues": "https://github.com/Livewirez/livewirez-billing-laravel/issues",
-                "source": "https://github.com/Livewirez/livewirez-billing-laravel/tree/v0.11"
+                "source": "https://github.com/Livewirez/livewirez-billing-laravel/tree/v0.13"
             },
-            "time": "2026-04-10T22:53:40+00:00"
+            "time": "2026-04-11T21:15:23+00:00"
         },
         {
             "name": "monolog/monolog",
