@@ -31,6 +31,7 @@ use Livewirez\Billing\Actions\CompletePaymentWithToken;
 use Livewirez\Billing\Actions\StartSubscriptionWithToken;
 use Livewirez\Billing\Http\Resources\BillingOrderResource;
 use Livewirez\Billing\Actions\SetupSubscriptionPaymentToken;
+use App\Services\SessionDataResolver;
 
 class CardHandler extends PaymentProviderHandler
 {
@@ -167,6 +168,8 @@ class CardHandler extends PaymentProviderHandler
             return Redirect::route('dashboard');
         }
 
+        $checkout_details = SessionDataResolver::getgetCheckoutDetails($request, $checkout_details);
+
         if (PaymentProvider::tryFrom($provider) === PaymentProvider::Card) {
 
             $result = $action->handle(
@@ -219,7 +222,8 @@ class CardHandler extends PaymentProviderHandler
 
                     if ($request->session()->has('cart')) {
                         return Inertia::render('store/CheckoutCart', [
-                            'cart' => $request->session()->get('cart')
+                            // 'cart' => $request->session()->get('cart')
+                            'cart' => SessionDataResolver::getCart($request, 'cart')
                         ]);
                     }
 

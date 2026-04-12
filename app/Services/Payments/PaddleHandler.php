@@ -131,6 +131,8 @@ class PaddleHandler extends PaymentProviderHandler
             return Redirect::route('dashboard');
         }
 
+        $checkout_details = SessionDataResolver::getgetCheckoutDetails($request, $checkout_details);
+
         if (PaymentProvider::tryFrom($provider) === PaymentProvider::Paddle && $request->session()->has('paddle_transaction_id')) {
 
             $result = $action->handle(
@@ -170,7 +172,8 @@ class PaddleHandler extends PaymentProviderHandler
 
                     if ($request->session()->has('cart')) {
                         return Inertia::render('store/CheckoutCart', [
-                            'cart' => $request->session()->get('cart')
+                            // 'cart' => $request->session()->get('cart')
+                            'cart' => SessionDataResolver::getCart($request, 'cart')
                         ]);
                     }
 
@@ -320,7 +323,7 @@ class PaddleHandler extends PaymentProviderHandler
         if ($lock->get()) {
             try {
 
-                $checkout_details = $request->session()->get('checkout_details');
+                $checkout_details = SessionDataResolver::getgetCheckoutDetails($request, $request->session()->get('checkout_details'));
         
                 $result = $action->handle(
                     $request->user(),

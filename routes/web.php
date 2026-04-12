@@ -160,7 +160,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         $cart = $request->session()->get('cart');
 
-        return Inertia::render('store/CheckoutCart_', [
+        if (is_array($cart)) {
+            $items = collect($cart)
+                ->map(fn (array $sci) => new CartItem(
+                   \Livewirez\Billing\Billing::$billingProduct::findOrFail($sci['product']['id']),
+                   $sci['quantity']
+                ));
+            
+           $cart = new Cart($items->toArray());
+        }
+
+        return Inertia::render('store/CheckoutCart', [
             'payment_methods' => \Livewirez\Billing\Http\Resources\BillablePaymentMethodResource::collection(
                 $request->user()->billable_payment_methods()->get()
             )->resolve(),

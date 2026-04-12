@@ -217,8 +217,6 @@ export class HttpRequest {
             }
             
             xhr.onreadystatechange = function (ev: Event) {
-
-                console.log('XHR State Change: ', ev);
                 
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     const resHeaders = xhr.getAllResponseHeaders()
@@ -227,15 +225,7 @@ export class HttpRequest {
                         .filter(a => a.length === 2 && a[0] !== '') as [string, string][];
 
                     if (xhr.status >= 200 && xhr.status < 300) {
-                        console.log('Request Success', {
-                            url: url,
-                            status: xhr.status,
-                            statusText: xhr.statusText,
-                            responseType: xhr.responseType,
-                            responseText: xhr.responseText,
-                            headers: resHeaders
-                        });
-
+                    
                         const headers = new Headers(resHeaders);
 
                         const response = new Response(xhr.responseText, {
@@ -252,15 +242,6 @@ export class HttpRequest {
                         resolve(http_reponse);
                     
                     } else if (xhr.status >= 300 && xhr.status < 400) {
-                        console.log('Request Success', {
-                            url: url,
-                            status: xhr.status,
-                            statusText: xhr.statusText,
-                            responseType: xhr.responseType,
-                            responseText: xhr.responseText,
-                            headers: resHeaders
-                        });
-
                         console.log('Rediecting.......')
 
                         const headers = new Headers(resHeaders);
@@ -295,15 +276,6 @@ export class HttpRequest {
                             }), xhr.responseText),
                             { cause: xhr.statusText }
                         );
-
-                        console.error('Request failed', {
-                            url: url,
-                            status: xhr.status,
-                            statusText: xhr.statusText,
-                            responseType: xhr.responseType,
-                            data: error.response.data,
-                            headers: resHeaders
-                        });
                         
                         reject(error);
                     }

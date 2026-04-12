@@ -4,6 +4,9 @@ namespace App\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Livewirez\Billing\Lib\Cart;
+use Livewirez\Billing\Lib\CartItem;
+use Livewirez\Billing\Lib\CheckoutDetails;
 
 class SessionDataResolver 
 {
@@ -41,5 +44,29 @@ class SessionDataResolver
             'selected_plan_price' => $request->session()->put('selected_plan_price', $model),
             default => null
         };
+    }
+
+    public static function getCart(Request $request, string $key = 'cart'): Cart
+    {
+        $cart = $request->session()->get($key);
+
+        if (is_array($cart)) {
+            $sci = array_map(function (array $cartItem) {
+                return new CartItem(\Livewirez\Billing\Billing::$billingProduct::findOrFail($cartItem['product']['id']), $cartItem['quantity']);
+            }, $cart);
+
+            $cart = new Cart($sci);
+        }
+
+        return $cart;
+    }
+
+    public static function getgetCheckoutDetails(Request $request, ?array $checkout_details = null): CheckoutDetails
+    {
+        $checkout_details ??= $request->session()->get('checkout_details');
+
+        throw_if($checkout_details === null, 'RuntimeException', 'CheckoutDetails does not exist in session or is empty');
+
+        return CheckoutDetails::fromArray($checkout_details);
     }
 }

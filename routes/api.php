@@ -49,11 +49,30 @@ Route::middleware('auth:sanctum')->group(function () {
                 return ['items' => []];
             }
 
-            $items = collect($cart->all())
-            ->map(fn (CartItem $sci) => [
-                'product' => BillingProductResource::make($sci->getProduct())->resolve($request),
-                'quantity' => $sci->getQuantity()
-            ]);
+            $items = null;
+
+            if (is_array($cart)) {
+
+                $items = collect($cart)
+                    ->map(fn (array $sci) => [
+                        'product' => BillingProductResource::make(BillingProduct::find($sci['product']['id']))->resolve($request),
+                        'quantity' => $sci['quantity']
+                    ]);
+            } elseif ($cart instanceof Cart) {
+                $items = collect($cart->all())
+                    ->map(fn (CartItem $sci) => [
+                        'product' => BillingProductResource::make($sci->getProduct())->resolve($request),
+                        'quantity' => $sci->getQuantity()
+                    ]);
+            } else {
+                
+                $items = collect($cart->all())
+                    ->map(fn (CartItem $sci) => [
+                        'product' => BillingProductResource::make($sci->getProduct())->resolve($request),
+                        'quantity' => $sci->getQuantity()
+                    ]);
+    
+            }
 
             return [
                 'items' => $items
@@ -63,8 +82,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/clear', function (Request $request) {
             $request->session()->forget('cart');
 
-
             $bc = $request->session()->get('billing_cart'); 
+
+            if (is_array($bc)) {
+                $bc = new BillingCartWrapper(Livewirez\Billing\Billing::$billingCart::findOrFail($bc['id']));
+            }
             $bc?->deleteCart();
             $request->session()->forget('billing_cart'); 
 

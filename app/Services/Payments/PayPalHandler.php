@@ -112,7 +112,8 @@ class PayPalHandler extends PaymentProviderHandler
     public static function completePaymentWithToken(Request $request, CompletePaymentWithToken $action): Response | Responsable
     {
         $provider = $request->query('provider');
-        $cart     = $request->session()->get('cart');
+        // $cart     = $request->session()->get('cart');
+        $cart     = SessionDataResolver::getCart($request, 'cart');
         $token    = $request->input('token');
         // $payerId = $request->input('PayerID');
 
@@ -197,7 +198,8 @@ class PayPalHandler extends PaymentProviderHandler
 
                     if ($request->session()->has('cart')) {
                         return Inertia::render('store/CheckoutCart', [
-                            'cart' => $request->session()->get('cart')
+                            // 'cart' => $request->session()->get('cart')
+                            'cart' => SessionDataResolver::getCart($request, 'cart')
                         ]);
                     }
 
@@ -410,7 +412,7 @@ class PayPalHandler extends PaymentProviderHandler
         $provider         = $request->query('provider');
         $token            = $request->input('token');
         $payerId          = $request->input('PayerID');
-        $checkout_details = $request->session()->get('checkout_details');
+        $checkout_details = SessionDataResolver::getgetCheckoutDetails($request, $request->session()->get('checkout_details'));
 
         if (! $provider && ! $token && ! $payerId && ! $checkout_details) {
             \Illuminate\Support\Facades\Log::warning('No Provider in cancel', [__METHOD__ . __LINE__]);
@@ -461,7 +463,8 @@ class PayPalHandler extends PaymentProviderHandler
 
                     if ($request->session()->has('cart')) {
                         return Inertia::render('store/CheckoutCart', [
-                            'cart' => $request->session()->get('cart')
+                            // 'cart' => $request->session()->get('cart')
+                            'cart' => SessionDataResolver::getCart($request, 'cart')
                         ]);
                     }
 
@@ -614,7 +617,7 @@ class PayPalHandler extends PaymentProviderHandler
                     PaymentProvider::PayPal,
                     $data['subscription_id'],
                     $planPrice,
-                    $request->session()->get('checkout_details'),
+                    SessionDataResolver::getgetCheckoutDetails($request, $request->session()->get('checkout_details')),
                     [
                         'token' => $request->query('token'),
                         'ba_token' => $request->query('ba_token'),

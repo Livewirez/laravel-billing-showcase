@@ -134,6 +134,8 @@ class PolarHandler extends PaymentProviderHandler
             return Redirect::route('dashboard');
         }
 
+        $checkout_details = SessionDataResolver::getgetCheckoutDetails($request, $checkout_details);
+
         if (PaymentProvider::tryFrom($provider) === PaymentProvider::Polar && $request->session()->has('polar_checkout_id')) {
 
             $result = $action->handle(
@@ -176,7 +178,8 @@ class PolarHandler extends PaymentProviderHandler
 
                     if ($request->session()->has('cart')) {
                         return Inertia::render('store/CheckoutCart', [
-                            'cart' => $request->session()->get('cart')
+                            // 'cart' => $request->session()->get('cart')
+                            'cart' => SessionDataResolver::getCart($request, 'cart')
                         ]);
                     }
 
@@ -331,7 +334,7 @@ class PolarHandler extends PaymentProviderHandler
                     PaymentProvider::Polar,
                     $request->session()->get('polar_checkout_id'),
                     $planPrice,
-                    $request->session()->get('checkout_details'),
+                    $checkout_details = SessionDataResolver::getgetCheckoutDetails($request, $request->session()->get('checkout_details')), // $request->session()->get('checkout_details'),
                     [
                         'customer_session_token' => $request->query('customer_session_token'),
                     ]
