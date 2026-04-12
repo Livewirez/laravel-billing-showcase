@@ -38,10 +38,7 @@ import { request } from '@/routes/password';
 import { Key } from 'lucide-vue-next';
 
 import { 
-    register_request_options,
-    login, register_creation_options,
-    store as storePasskey, update_passkey,
-    delete_passkey  
+    register_request_options, 
 } from '@/routes/passkeys/webauthn/passkeys';
 
 import { HttpError, HttpRequest, HttpResponse } from '@/lib/utils';
@@ -79,7 +76,7 @@ function startWebauthnLogin() {
                     });
 
                     // Verify authentication with server
-                    const verificationResponse = await HttpRequest.post(login.url(), {
+                    const verificationResponse = await HttpRequest.post('/passkeys/verify-authentication', {
                         credentials: JSON.stringify(authResponse),
                         credentials_id: authResponse.id
                     });

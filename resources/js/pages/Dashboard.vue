@@ -62,7 +62,7 @@ const  testJ = async () => {
     <div
         class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
     >
-        <button class="bg-emerald-500 px-1.5 py-0.5"  @click="testJ()">Click Me</button>
+        <button class="bg-emerald-500 px-1.5 py-0.5 hidden"  @click="testJ()">Click Me</button>
 
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
             <div
