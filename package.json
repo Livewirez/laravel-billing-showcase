@@ -40,6 +40,7 @@
         "@paypal/paypal-js": "^9.6.0",
         "@paypal/paypal-js-root": "github:paypal/paypal-js",
         "@polar-sh/checkout": "^0.2.0",
+        "@simplewebauthn/browser": "^13.3.0",
         "@vueuse/core": "^12.8.2",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",

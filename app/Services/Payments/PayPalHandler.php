@@ -111,9 +111,9 @@ class PayPalHandler extends PaymentProviderHandler
     #[\Override]
     public static function completePaymentWithToken(Request $request, CompletePaymentWithToken $action): Response | Responsable
     {
+        // TRUNCATE TABLE billable_payment_methods RESTART IDENTITY CASCADE;
         $provider = $request->query('provider');
-        // $cart     = $request->session()->get('cart');
-        $cart     = SessionDataResolver::getCart($request, 'cart');
+        $cart     = $request->session()->get('cart');
         $token    = $request->input('token');
         // $payerId = $request->input('PayerID');
 
@@ -121,6 +121,8 @@ class PayPalHandler extends PaymentProviderHandler
            \Illuminate\Support\Facades\Log::warning('No Provider in cancel', [__METHOD__ . __LINE__]);
             return Redirect::route('dashboard');
         }
+
+        $cart = SessionDataResolver::getCart($request, $cart);
 
         if (PaymentProvider::tryFrom($provider) === PaymentProvider::PayPal) {
 
@@ -412,13 +414,14 @@ class PayPalHandler extends PaymentProviderHandler
         $provider         = $request->query('provider');
         $token            = $request->input('token');
         $payerId          = $request->input('PayerID');
-        $checkout_details = SessionDataResolver::getgetCheckoutDetails($request, $request->session()->get('checkout_details'));
+        $checkout_details = $request->session()->get('checkout_details');
 
         if (! $provider && ! $token && ! $payerId && ! $checkout_details) {
             \Illuminate\Support\Facades\Log::warning('No Provider in cancel', [__METHOD__ . __LINE__]);
             return Redirect::route('dashboard');
         }
 
+        $checkout_details = SessionDataResolver::getgetCheckoutDetails($request, $checkout_details);
 
         if (PaymentProvider::tryFrom($provider) === PaymentProvider::PayPal) {
 

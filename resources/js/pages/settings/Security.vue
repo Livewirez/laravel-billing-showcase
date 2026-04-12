@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
-import { ShieldCheck } from 'lucide-vue-next';
+import { ShieldCheck, Key } from 'lucide-vue-next';
 import { onUnmounted, ref } from 'vue';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
 import Heading from '@/components/Heading.vue';
@@ -8,6 +8,7 @@ import InputError from '@/components/InputError.vue';
 import PasswordInput from '@/components/PasswordInput.vue';
 import TwoFactorRecoveryCodes from '@/components/TwoFactorRecoveryCodes.vue';
 import TwoFactorSetupModal from '@/components/TwoFactorSetupModal.vue';
+import PasskeySetupModal from '@/components/PasskeySetupModal.vue';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
@@ -39,6 +40,7 @@ defineOptions({
 
 const { hasSetupData, clearTwoFactorAuthData } = useTwoFactorAuth();
 const showSetupModal = ref<boolean>(false);
+const showPasskeySetupModal = ref<boolean>(false);
 
 onUnmounted(() => clearTwoFactorAuthData());
 </script>
@@ -177,5 +179,30 @@ onUnmounted(() => clearTwoFactorAuthData());
             :requiresConfirmation="requiresConfirmation"
             :twoFactorEnabled="twoFactorEnabled"
         />
+    </div>
+
+    <div class="space-y-6">
+        <Heading
+            variant="small"
+            title="Passkeys"
+            description="Manage your passkey settings"
+        />
+
+        <div
+            class="flex flex-col items-start justify-start space-y-4"
+        >
+            <p class="text-sm text-muted-foreground">
+                If you have a compatible device, you can enable passwordless authentication (Face ID, Windows Hello or Biometric Authentication). 
+                To do this, you need to enable Passwordless Sign In on this device.
+            </p>
+
+            <div>
+                <Button  @click="showPasskeySetupModal = true">
+                    <Key/> Create Passkey
+                </Button>
+            </div>
+        </div>
+
+        <PasskeySetupModal v-model:isOpen="showPasskeySetupModal"/>
     </div>
 </template>

@@ -42,6 +42,8 @@ class AppServiceProvider extends ServiceProvider
             PaymentProvider::Card->value, 
             fn (Application $app, array $config) => new CardProvider($config)
         );
+
+        \Livewirez\Webauthn\WebauthnConfig::$passkeyRedirectRouteResolver = fn () => route('dashboard.default', absolute: false);
     }
 
     /**

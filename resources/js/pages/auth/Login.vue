@@ -11,6 +11,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
+import LoginWithPasskey from '@/components/LoginWithPasskey.vue';
 
 defineOptions({
     layout: {
@@ -108,4 +109,6 @@ defineProps<{
             <TextLink :href="register()" :tabindex="5">Sign up</TextLink>
         </div>
     </Form>
+
+    <LoginWithPasskey class="mt-6" />
 </template>

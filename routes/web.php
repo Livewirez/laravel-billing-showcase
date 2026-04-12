@@ -38,7 +38,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
      Route::get('/dashboard', function (Request $request) {
 
-        $defaultTeam = $request->user()->currentTeam()->first();
+        $defaultTeam = $request->user()->currentTeam()->firstOr(
+            fn () => $request->user()->teams()->first()
+        );
 
         return redirect()->route('dashboard', ['current_team' => $defaultTeam?->slug ?? '']);
     })->name('dashboard.default');
