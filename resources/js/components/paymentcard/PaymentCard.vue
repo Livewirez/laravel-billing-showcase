@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, onBeforeMount, watch } from 'vue';
+import { onMounted, ref, onBeforeMount, watch, onUnmounted } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input';
@@ -105,8 +105,8 @@ const libraryUrl = ref<string|null>(null);
 const integrity = ref<string|null>(null);
 const clientScript = ref<HTMLScriptElement | null>(null);
 const microform = ref<any>(null);
-const payment_initiated = ref(false)
-
+const payment_initiated = ref(false);
+const controller = new AbortController();
 
 onBeforeMount(async () => {
     await HttpRequest.post(setup_cybersource_session.url())
@@ -128,6 +128,12 @@ onBeforeMount(async () => {
     })
 })
 
+onUnmounted(() => {
+    if (controller) {
+        controller.abort()
+    }
+})
+
 const createForm = () => {
 
     if (libraryUrl.value && integrity.value) {
@@ -141,6 +147,12 @@ const createForm = () => {
         clientScript.value.crossOrigin = "anonymous";
         // run setup code after script has loaded successfully
         clientScript.value.onload = function () {
+
+            const mediaQueryList = window.matchMedia(
+                '(prefers-color-scheme: dark)',
+            );
+
+            const systemTheme = mediaQueryList.matches ? 'dark' : 'light';
 
             const myStyles = {  
                 'input': {    
@@ -162,8 +174,45 @@ const createForm = () => {
                 flex: flex, microform: microform.value
             })
 
+            // https://developer.cybersource.com/docs/cybs/en-us/digital-accept-flex-api/developer/ctv/rest/flex-api/microform-integ-v2/styling-v2.html
+            const inputColor = systemTheme === 'dark' ? '#FFFFFF' : '#555';
+            // var number = microform.createField('number', { styles: { input: { color: '#000' }}});
+
             const number = microform.value.createField('number', { placeholder: 'Enter card number' });
+            // console.log('Number Field', number)
+            // number._config = { ...number._config, styles: { input: { color: systemTheme === 'dark' ? '#fff' : '#000' }} }
             const securityCode = microform.value.createField('securityCode', { placeholder: '•••' });
+            // securityCode._config = { ...securityCode._config, styles: { input: { color: systemTheme === 'dark' ? '#fff' : '#000' }} }
+
+            const getStyles = (isDark: boolean) => {
+                return {
+                    input: {
+                        color: isDark ? '#fff' : '#555'
+                    }
+                };
+            }
+
+            const createFields = (isDark: boolean) => {
+                const numberField = microform.value.createField('number', {
+                    placeholder: 'Enter card number',
+                    styles: getStyles(isDark)
+                });
+
+                const securityCodeField = microform.value.createField('securityCode', {
+                    placeholder: '•••',
+                    styles: getStyles(isDark)
+                });
+
+                numberField.load('#cardnumber');
+                securityCodeField.load('#securitycode');
+            }
+
+            mediaQueryList.addEventListener('change', (event: MediaQueryListEvent) => {
+               createFields(event.matches);
+            }, {
+                signal: controller.signal
+            });
+
             number.load('#cardnumber');
             securityCode.load('#securitycode');
         };

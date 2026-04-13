@@ -559,7 +559,7 @@ function createPaddle() {
                                 <div id="paypal-button-container"></div>
 
                                 <div class="flex items-center space-x-2 mt-4">
-                                    <Checkbox @update:model-value="(value: boolean | 'indeterminate') => {
+                                    <Checkbox class="border-neutral-800 dark:border-neutral-200" @update:model-value="(value: boolean | 'indeterminate') => {
                                         if (typeof value === 'boolean') {
                                             save_token = value;
                                         }
