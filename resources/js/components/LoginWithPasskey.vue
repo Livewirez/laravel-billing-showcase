@@ -84,9 +84,6 @@ function startWebauthnLogin() {
                         credentials_id: authResponse.id
                     });
 
-                    // Reset store state on success
-                    working.value = false
-
                     console.log('verificationResponse', verificationResponse) 
 
                     // Handle successful login
@@ -96,6 +93,11 @@ function startWebauthnLogin() {
 
                     resolve(verificationResponse.data);
 
+                    setTimeout(() => {
+                        // Reset store state on success
+                        working.value = false
+                    }, 3000);
+                
                 } catch (error: unknown) {
                     handleAuthenticationError(error, reject);
                 }
