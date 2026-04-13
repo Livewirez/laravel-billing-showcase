@@ -61,6 +61,15 @@ class SessionDataResolver
         return $cart;
     }
 
+    public static function getCartFromArray(Request $request, array $cart): Cart
+    {
+        $sci = array_map(function (array $cartItem) {
+            return new CartItem(\Livewirez\Billing\Billing::$billingProduct::findOrFail($cartItem['product']['id']), $cartItem['quantity']);
+        }, $cart);
+
+       return new Cart($sci);
+    }
+
     public static function getgetCheckoutDetails(Request $request, ?array $checkout_details = null): CheckoutDetails
     {
         $checkout_details ??= $request->session()->get('checkout_details');

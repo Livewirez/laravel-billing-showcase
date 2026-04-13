@@ -122,7 +122,7 @@ class PayPalHandler extends PaymentProviderHandler
             return Redirect::route('dashboard');
         }
 
-        $cart = SessionDataResolver::getCart($request, $cart);
+        $cart = SessionDataResolver::getCartFromArray($request, $cart);
 
         if (PaymentProvider::tryFrom($provider) === PaymentProvider::PayPal) {
 

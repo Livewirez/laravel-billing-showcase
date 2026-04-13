@@ -12,13 +12,8 @@ import {
 import { store } from '@/routes/two-factor/login';
 import type { TwoFactorConfigContent } from '@/types';
 
-
-
-
 const showRecoveryInput = ref<boolean>(false);
 const code = ref<string>('');
-
-
 
 const authConfigContent = computed<TwoFactorConfigContent>(() => {
     if (showRecoveryInput.value) {
