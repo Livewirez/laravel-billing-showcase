@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Form, Head, setLayoutProps } from '@inertiajs/vue3';
-import { computed, ref, watchEffect } from 'vue';
+import { computed, ref, watchEffect, watch } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,13 +40,16 @@ const toggleRecoveryMode = (clearErrors: () => void): void => {
     code.value = '';
 };
 
-watchEffect(() => {
-    setLayoutProps({
-        title: authConfigContent.value.title,
-        description: authConfigContent.value.description,
-    });
-});
-
+watch(
+    authConfigContent,
+    (content) => {
+        setLayoutProps({
+            title: content.title,
+            description: content.description,
+        });
+    },
+    { immediate: true },
+);
 </script>
 
 <template>

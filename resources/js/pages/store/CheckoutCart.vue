@@ -605,7 +605,7 @@ function createPaddle() {
                                 class="bg-[#171C17] hover:bg-[#21261B] shadow-sm shadow-white/5 w-full rounded-sm items-center justify-center cursor-pointer px-4 py-2.25 flex flex-1 gap-4"
                             >
                                 <span v-if="payment_initiated" class="loader"></span>
-                                <img alt="Paddle logo" loading="lazy" width="105" height="32" decoding="async" data-nimg="1" style="color:transparent" src="https://www.paddle.com/_next/static/media/logo-primary.1520b460.svg">
+                                <img alt="Paddle logo" loading="lazy" width="105" height="32" decoding="async" data-nimg="1" style="color:transparent" src="https://www.paddle.com/_next/static/media/paddle-logo-inverted.02kelud1d95as.svg">
                             </button>
                         </article>
 

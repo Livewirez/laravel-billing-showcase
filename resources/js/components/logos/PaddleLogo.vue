@@ -18,7 +18,15 @@ interface Dimensions {
     svg_width?: number
 }
 
-const { svg_height = 120, svg_width = 120 } = defineProps<Dimensions>()
+// const { svg_height = 120, svg_width = 120 } = defineProps<Dimensions>()
+
+const props = withDefaults(
+    defineProps<Dimensions>(),
+    {
+        svg_height: 120, svg_width: 120 
+    },
+);
+
 
 const container = ref<HTMLElement | null>(null)
 const svg = ref<SVGSVGElement | null>(null)
