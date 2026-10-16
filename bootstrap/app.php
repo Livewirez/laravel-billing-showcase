@@ -1,14 +1,15 @@
 <?php
 
-use Illuminate\Console\Scheduling\Schedule;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetTeamUrlDefaults;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 $apiRoutes = [
     __DIR__.'/../routes/api.php',
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         api: $apiRoutes,
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        then: fn (Application $app) => Route::middleware([])->group( __DIR__.'/../routes/webhooks.php')
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);

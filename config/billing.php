@@ -12,22 +12,32 @@ return [
 
         // https://developer.cybersource.com/library/documentation/dev_guides/REST_API/Getting_Started/html/index.html#page/REST_GS%2Fch_authentication.5.3.htm%23ww1120375
         'cybersource' => [
-            'environment' => env('CYBERSOURCE_ENVIRONMENT', "sandbox"),
+            'environment' => env('CYBERSOURCE_ENVIRONMENT', 'sandbox'),
             'base_url' => [
                 'sandbox' => 'https://apitest.cybersource.com',
-                'production' => env('CYBERSOURCE_BASE_URL', 'https://api.cybersource.com')
+                'production' => env('CYBERSOURCE_BASE_URL', 'https://api.cybersource.com'),
             ],
+            // Separate env vars: one CYBERSOURCE_HOST used for both would point
+            // production at the sandbox host (or vice versa).
             'host' => [
-                'sandbox' => env('CYBERSOURCE_HOST', 'apitest.cybersource.com'),
-                'production' => env('CYBERSOURCE_HOST', 'api.cybersource.com'),
+                'sandbox' => env('CYBERSOURCE_SANDBOX_HOST', 'apitest.cybersource.com'),
+                'production' => env('CYBERSOURCE_PRODUCTION_HOST', 'api.cybersource.com'),
             ],
-            'key' => env('CYBERSOURCE_KEY'),
-            'shared_secret' => env('CYBERSOURCE_SHARED_SECRET'),
-            'organization_id' => env('CYBERSOURCE_ORGANIZATION_ID'),
+            'key' => env('CYBERSOURCE_KEY'),                     // REST shared-secret key id
+            'shared_secret' => env('CYBERSOURCE_SHARED_SECRET'), // base64 secret
             'merchant_id' => env('CYBERSOURCE_MERCHANT_ID'),
-            'rest_api_shared_secret' => env('CYBERSOURCE_REST_API_SHARED_SECRET')
+            'organization_id' => env('CYBERSOURCE_ORGANIZATION_ID'),
+            // Unused by the REST flow; this is not a thirdPartyCertificationNumber.
+            'rest_api_shared_secret' => env('CYBERSOURCE_REST_API_SHARED_SECRET'),
         ],
 
+        // Mastercard Gateway (MPGS). Credentials come from your acquiring bank.
+        'mastercard' => [
+            'base_url' => env('MPGS_BASE_URL', 'https://test-gateway.mastercard.com'),
+            'api_version' => env('MPGS_API_VERSION', '100'),
+            'merchant_id' => env('MPGS_MERCHANT_ID'),
+            'api_password' => env('MPGS_API_PASSWORD'),
+        ],
         'paypal' => [
             'provider' => 'paypal',
             'default_paypal_provider' => env('PAYPAL_DEFAULT_PROVIDER', 'paypal_http'),
@@ -204,6 +214,91 @@ return [
             'payment_return_url' => env('PADDLE_PAYMENT_RETURN_URL', env('APP_URL')),
             'subscription_return_url' => env('PADDLE_SUBSCRIPTION_RETURN_URL', env('APP_URL')),
         ]
+    ],
+
+    'card' => [
+
+        'default' => env('BILLING_CARD_GATEWAY', 'cybersource_microform'),
+
+        'gateways' => [
+
+            'cybersource_microform' => [
+                'driver' => 'cybersource_microform',
+                // https only, no paths, no wildcards. Add every origin in any iframe chain.
+                'target_origins' => [env('APP_URL')],
+                'card_networks' => ['VISA', 'MASTERCARD', 'AMEX', 'MAESTRO'],
+                'include_card_prefix' => false,
+                // null = MID default, false = send DECISION_SKIP
+                'decision_manager' => null,
+            ],
+
+            'cybersource' => [
+                'driver' => 'cybersource',
+                // https only, no paths, no wildcards. Add every origin in any iframe chain.
+                'target_origins' => [env('APP_URL')],
+                'card_networks' => ['VISA', 'MASTERCARD', 'AMEX', 'MAESTRO'],
+                'include_card_prefix' => false,
+                // null = MID default, false = send DECISION_SKIP
+                'decision_manager' => null,
+            ],
+
+            'cybersource_unified_checkout' => [
+                'driver' => 'cybersource_unified_checkout',
+                'enabled' => env('CYBERSOURCE_UC_ENABLED', false),
+                'mode' => env('CYBERSOURCE_UC_MODE', 'complete'), // complete | token
+                'client_version' => '0.34', // 0.34, 0.35, 1.0
+                'target_origins' => [env('APP_URL')],
+                'card_networks' => ['VISA', 'MASTERCARD', 'AMEX'],
+                // Each must also be enabled in Business Center > Payment Configuration > Unified Checkout.
+                'payment_types' => ['PANENTRY', 'CLICKTOPAY', 'GOOGLEPAY', 'APPLEPAY'],
+                'payment_type_options' => [],
+                'consumer_authentication' => true, // 3-D Secure in "complete" mode
+                'decision_manager' => env('CYBERSOURCE_UC_DECISION_MANAGER', true), // Decision Manager in "complete" mode
+                'billing_type' => env('CYBERSOURCE_UC_BILLING_TYPE', 'FULL'),          // FULL | PARTIAL | NONE
+                'country' => env('CYBERSOURCE_UC_COUNTRY', 'GB'),
+                'locale' => env('CYBERSOURCE_UC_LOCALE', 'en_GB'),
+                'sidebar' => false,
+                'capture_mandate' => [
+                    'billing_type' => env('CYBERSOURCE_UC_BILLING_TYPE', 'FULL'), // FULL | PARTIAL | NONE
+                    'request_email' => true,
+                    'request_phone' => false,
+                    'request_shipping' => env('CYBERSOURCE_UC_REQUEST_SHIPPING', false),
+                    'show_accepted_network_icons' => true,
+                    'ship_to_countries' => env('CYBERSOURCE_UC_COUNTRIES', 'GB,US'),
+                ],
+            ],
+
+            'cybersource_click_to_pay' => [
+                'driver' => 'cybersource_click_to_pay',
+                'enabled' => env('CYBERSOURCE_CTP_ENABLED', false),
+                'mode' => env('CYBERSOURCE_CTP_MODE', 'complete'), // complete | token
+                'client_version' => '0.34',
+                'target_origins' => [env('APP_URL')],
+                'card_networks' => ['VISA', 'MASTERCARD', 'AMEX'],
+                // Each must also be enabled in Business Center > Payment Configuration > Unified Checkout.
+                'payment_types' => ['CLICKTOPAY'],
+                'payment_type_options' => [],
+                'consumer_authentication' => true, // 3-D Secure in "complete" mode
+                'decision_manager' => env('CYBERSOURCE_CTP_DECISION_MANAGER', true), // Decision Manager in "complete" mode
+                'billing_type' => env('CYBERSOURCE_CTP_BILLING_TYPE', 'FULL'),          // FULL | PARTIAL | NONE
+                'country' => env('CYBERSOURCE_CTP_COUNTRY', 'GB'),
+                'locale' => env('CYBERSOURCE_CTP_LOCALE', 'en_GB'),
+                'sidebar' => false,
+                'capture_mandate' => [
+                    'billing_type' => env('CYBERSOURCE_CTP_BILLING_TYPE', 'FULL'), // FULL | PARTIAL | NONE
+                    'request_email' => true,
+                    'request_phone' => false,
+                    'request_shipping' => env('CYBERSOURCE_CTP_REQUEST_SHIPPING', false),
+                    'show_accepted_network_icons' => true,
+                    'ship_to_countries' => env('CYBERSOURCE_CTP_COUNTRIES', 'GB,US'),
+                ],
+            ],
+
+            'mastercard' => [
+                'driver' => 'mastercard_gateway',
+                'enabled' => env('MPGS_ENABLED', false),
+            ],
+        ],
     ],
 
  

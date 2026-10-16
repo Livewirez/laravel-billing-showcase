@@ -89,6 +89,10 @@ Route::middleware('auth:sanctum')->group(function () {
             }
             $bc?->deleteCart();
             $request->session()->forget('billing_cart'); 
+            if ($request->session()->has('to_flush')) {
+                $request->session()->forget($request->session()->get('to_flush'));
+                $request->session()->forget('to_flush');
+            }
 
             return [
                 'items' => []

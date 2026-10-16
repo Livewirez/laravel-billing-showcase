@@ -30,7 +30,7 @@ use App\Services\SessionDataResolver;
 class PaddleHandler extends PaymentProviderHandler
 {
     #[\Override]
-    public static function initializePayment(Request $request, InitializePayment $action): Response
+    public static function initializePayment(Request $request, InitializePayment $action): Response|Responsable
     {
         $userId = $request->user()->id;
 
@@ -122,7 +122,7 @@ class PaddleHandler extends PaymentProviderHandler
     }
 
     #[\Override]
-    public static function completePayment(Request $request, CompletePayment $action): Response | Responsable
+    public static function completePayment(Request $request, CompletePayment $action): Response|Responsable
     {
         if (! ($provider = $request->query('provider')) 
             || ! ($checkout_details = $request->session()->get('checkout_details'))
@@ -287,7 +287,7 @@ class PaddleHandler extends PaymentProviderHandler
     }
 
 
-    public static function startSubscription(Request $request, StartSubscription $action): Response | Responsable
+    public static function startSubscription(Request $request, StartSubscription $action): Response|Responsable
     {
         $data = $request->validate([
             'provider' => [new Enum(PaymentProvider::class), 'required', function(string $attribute, mixed $value, \Closure $fail) {

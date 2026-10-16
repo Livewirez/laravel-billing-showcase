@@ -3,7 +3,8 @@ import type { Product } from './products';
 export type PaymentOptions = CardOptions & Record<string, any>
 
 export interface CardOptions {
-    card_gateway?: 'cybersource' | 'mastercard';
+    card_gateway?: 'cybersource' | 'mastercard' | 'cybersource_unified_checkout' | 'cybersource_click_to_pay';
+    card_gateway_phase?: 1 | 2;
 }
 
 

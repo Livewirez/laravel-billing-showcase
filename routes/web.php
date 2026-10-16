@@ -1,23 +1,23 @@
 <?php
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
+use App\Http\Controllers\OrdersController;
+use App\Http\Controllers\SubscriptionsController;
 use App\Http\Controllers\Teams\TeamInvitationController;
 use App\Http\Middleware\EnsureTeamMembership;
-use Illuminate\Support\Facades\Route;
 use App\Services\SessionDataResolver;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 use Laravel\Fortify\Features;
+use Livewirez\Billing\Enums\ProductType;
+use Livewirez\Billing\Enums\SubscriptionStatus;
+use Livewirez\Billing\Http\Resources\BillingProductResource;
+use Livewirez\Billing\Lib\BillingCartWrapper;
 use Livewirez\Billing\Lib\Cart;
 use Livewirez\Billing\Lib\CartItem;
-use Livewirez\Billing\Enums\ProductType;
 use Livewirez\Billing\Models\BillingPlan;
-use App\Http\Controllers\OrdersController;
 use Livewirez\Billing\Models\BillingProduct;
-use Livewirez\Billing\Lib\BillingCartWrapper;
-use Livewirez\Billing\Enums\SubscriptionStatus;
-use App\Http\Controllers\SubscriptionsController;
-use Illuminate\Contracts\Database\Eloquent\Builder;
-use Livewirez\Billing\Http\Resources\BillingProductResource;
 
 Route::inertia('/', 'Welcome', [
     'canRegister' => Features::enabled(Features::registration()),
@@ -279,7 +279,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'subscription' => $subscription?->only(['id', 'interval', 'payment_provider', 'billing_plan_name',  'status', 'ends_at'])
         ]);
     })->name('subscriptions');
-
 });
 
 

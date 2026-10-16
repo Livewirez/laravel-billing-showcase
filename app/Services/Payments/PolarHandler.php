@@ -30,7 +30,7 @@ use App\Services\SessionDataResolver;
 class PolarHandler extends PaymentProviderHandler
 {
     #[\Override]
-    public static function initializePayment(Request $request, InitializePayment $action): Response
+    public static function initializePayment(Request $request, InitializePayment $action): Response|Responsable
     {
         $userId = $request->user()->id;
 
@@ -125,7 +125,7 @@ class PolarHandler extends PaymentProviderHandler
     }
 
     #[\Override]
-    public static function completePayment(Request $request, CompletePayment $action): Response | Responsable
+    public static function completePayment(Request $request, CompletePayment $action): Response|Responsable
     {
         if (! ($provider = $request->query('provider')) 
             || ! ($checkout_details = $request->session()->get('checkout_details'))
@@ -291,7 +291,7 @@ class PolarHandler extends PaymentProviderHandler
     }
 
     #[\Override]
-    public static function startSubscription(Request $request, StartSubscription $action): Response | Responsable
+    public static function startSubscription(Request $request, StartSubscription $action): Response|Responsable
     {
         // 
         $data = $request->validate([

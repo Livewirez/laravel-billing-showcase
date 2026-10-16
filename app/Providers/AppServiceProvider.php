@@ -40,8 +40,14 @@ class AppServiceProvider extends ServiceProvider
 
         Billing::extend(
             PaymentProvider::Card->value, 
-            fn (Application $app, array $config) => new CardProvider($config)
+           // fn (Application $app, array $config) => new CardProvider($config)
+           fn (Application $app, array $config) => new \App\Billing\Providers\CardProvider($app->make(\App\Billing\Lib\Card\CardGatewayManager::class))
         );
+
+        // Billing::extend(
+        //     PaymentProvider::Cybersource->value, 
+        //     fn (Application $app, array $config) => new CardProvider($config)
+        // );
 
         \Livewirez\Webauthn\WebauthnConfig::$passkeyRedirectRouteResolver = fn () => route('dashboard.default', absolute: false);
     }

@@ -2,37 +2,57 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Livewirez\Billing\Lib\Cart;
-use Livewirez\Billing\Lib\CartItem;
 use App\Actions\Orders\CancelPayment;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Validation\Rules\Enum;
-use Livewirez\Billing\Models\Product;
-use App\Services\Payments\CardHandler;
 use App\Actions\Orders\CompletePayment;
-use App\Services\Payments\PolarHandler;
-use App\Services\Payments\PaddleHandler;
-use App\Services\Payments\PayPalHandler;
-use Illuminate\Support\Facades\Redirect;
+use App\Actions\Orders\CompletePaymentWithToken;
 use App\Actions\Orders\InitializePayment;
 use App\Actions\Orders\SetupPaymentToken;
-use Livewirez\Billing\Enums\PaymentStatus;
-use Livewirez\Billing\Lib\Card\CardManager;
-use Livewirez\Billing\Enums\PaymentProvider;
+use App\Services\Payments\CardHandler;
+use App\Services\Payments\PaddleHandler;
+use App\Services\Payments\PayPalHandler;
+use App\Services\Payments\PolarHandler;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\ValidationException;
-use App\Actions\Orders\CompletePaymentWithToken;
+use Livewirez\Billing\Actions\InitializeOrder;
+use Livewirez\Billing\Actions\ResumeOrder;
+use Livewirez\Billing\Enums\PaymentProvider;
+use Livewirez\Billing\Enums\PaymentStatus;
+use Livewirez\Billing\Facades\Billing;
+use Livewirez\Billing\Lib\Card\CardManager;
+use Livewirez\Billing\Lib\Cart;
+use Livewirez\Billing\Lib\CartItem;
+use Livewirez\Billing\Models\Product;
 
 class OrdersController extends Controller
 {
 
-    public function createCyberSourceMicroformSession()
+    public function createCyberSourceMicroformSession(Request $request)
     {
-        $response = CardManager::createSession('cybersource');
+        // $response = CardManager::createSession('cybersource');
+        // return [
+        //     'token' => $response->body()
+        // ];
+        
+        $provider = Billing::provider(PaymentProvider::Card->value);
 
-        return [
-            'token' => $response->body()
-        ];
+        if (method_exists($provider, 'createPartialCardSession')) {
+            $cardSession = $provider->createPartialCardSession();
+
+            $request->session()->put('partial_card_session', $cardSession);
+            return [
+                'token' => $cardSession->ctx->token,
+            ];
+        } else {
+            $response = CardManager::createSession('cybersource');
+            return [
+                'token' => $response->body()
+            ];
+        }
+        
     }
 
     public function setupPaymentToken(Request $request, SetupPaymentToken $action)
@@ -77,6 +97,8 @@ class OrdersController extends Controller
 
         $validated = $request->validate([
             'provider' => [new Enum(PaymentProvider::class), 'required'],
+            'card_gateway' => ['nullable', 'string',  Rule::in(['cybersource_unified_checkout', 'cybersource_click_to_pay']),],
+            'card_gateway_phase' => ['int', 'required_if:card_gateway,cybersource_unified_checkout,cybersource_click_to_pay'],
             'products' => ['required', 'array'],
             'products.*' => ['required', 'array', 'required_array_keys:product,quantity'],
             'products.*.product' => ['required', 'numeric', 'exists:billing_products,id'],
@@ -84,7 +106,14 @@ class OrdersController extends Controller
         ]);
 
         return match (PaymentProvider::tryFrom($validated['provider'])) {
-            PaymentProvider::Card => CardHandler::initializePayment($request, $action),
+            PaymentProvider::Card => match ($validated['card_gateway'] ?? null) {
+                'cybersource_unified_checkout', 'cybersource_click_to_pay' => match ($validated['card_gateway_phase'] ?? 1) {
+                    1 , 'phase_one' => CardHandler::initializePaymentForUnified($request, app(InitializeOrder::class)),
+                    2 , 'phase_two' => CardHandler::resumeOrderForUnified($request, app(ResumeOrder::class)),
+                    default =>  CardHandler::initializePaymentForUnified($request, app(InitializeOrder::class))
+                },
+                default => CardHandler::initializePayment($request, $action)
+            },
             PaymentProvider::PayPal => PayPalHandler::initializePayment($request, $action),
             PaymentProvider::Polar => PolarHandler::initializePayment($request, $action),
             PaymentProvider::Paddle => PaddleHandler::initializePayment($request, $action),

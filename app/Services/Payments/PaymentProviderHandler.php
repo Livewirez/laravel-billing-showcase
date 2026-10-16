@@ -32,19 +32,19 @@ abstract class PaymentProviderHandler
         return Redirect::route('dashboard');
     }
 
-    public static function completePaymentWithToken(Request $request, CompletePaymentWithToken $action): Response | Responsable
+    public static function completePaymentWithToken(Request $request, CompletePaymentWithToken $action): Response|Responsable
     {
         return Redirect::route('dashboard');
     }
 
-    public static function startSubscriptionWithToken(Request $request, StartSubscriptionWithToken $action): Response | Responsable 
+    public static function startSubscriptionWithToken(Request $request, StartSubscriptionWithToken $action): Response|Responsable 
     {
         return Redirect::route('dashboard');
     }
 
-    abstract public static function initializePayment(Request $request, InitializePayment $action): Response;
+    abstract public static function initializePayment(Request $request, InitializePayment $action): Response|Responsable;
 
-    abstract public static function completePayment(Request $request, CompletePayment $action): Response | Responsable;
+    abstract public static function completePayment(Request $request, CompletePayment $action): Response|Responsable;
 
     abstract public static function cancelPayment(Request $request, CancelPayment $action): Response;
 
@@ -52,5 +52,5 @@ abstract class PaymentProviderHandler
 
     abstract public static function updateSubscription(Request $request, UpdateSubscription $action): Response;
 
-    abstract public static function startSubscription(Request $request, StartSubscription $action): Response | Responsable;
+    abstract public static function startSubscription(Request $request, StartSubscription $action): Response|Responsable;
 }

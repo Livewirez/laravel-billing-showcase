@@ -30,8 +30,9 @@ import type {
 import { initializePaddle, type Paddle } from '@paddle/paddle-js';
 import { defaultFormatter } from '@/lib/utils';
 import { Checkbox } from "@/components/ui/checkbox";
-import { CreditCard, CreditCardIcon } from "lucide-vue-next";
+import { CreditCard, CreditCardIcon, Cross } from "lucide-vue-next";
 import PaymentCard from '@/components/paymentcard/PaymentCard.vue';
+import CybersourceUnified from '@/components/paymentcard/CybersourceUnified.vue';
 import type { PaymentOptions } from '@/lib/orders';
 import { CybersourceMicroformHandler } from '@/lib/payment_providers';
 import { JWT } from '@/lib/utils';
@@ -68,7 +69,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
-const tabs = ['card', 'paypal', 'paypaljs', 'polar', 'paddle']
+const tabs = ['card', 'paypal', 'paypaljs', 'polar', 'paddle', 'card:cybersource-unified']
 const currentTab = ref('paypal')
 
 function formatPrice(currency: string, amount: number | bigint | Intl.StringNumericLiteral) 
@@ -94,16 +95,47 @@ const initiatePayment = async (provider: string, options: PaymentOptions = {} ) 
     switch(provider) {
 
         case 'card':
-            return await HttpRequest.post(initiate_payment.url(), {
-                provider: 'card',
-                products: props.cart_items,
-                ...options
-            }).then(res => {
-                return res;
-            }).catch(error => {
-                console.error('Error: ', error.response, error.response?.data)
-                payment_initiated.value = false
-            })
+            switch (options.card_gateway) {
+                case 'cybersource_unified_checkout': 
+                    return await HttpRequest.post(initiate_payment.url(), {
+                        provider: 'card',
+                        products: props.cart_items,
+                        ...options
+                    }).then(res => {
+                        return res;
+                    }).catch(error => {
+                        console.error('Error: ', error.response, error.response?.data)
+                        payment_initiated.value = false
+
+                        throw error;
+                    })
+                case 'cybersource_click_to_pay':
+                    return await HttpRequest.post(initiate_payment.url(), {
+                        provider: 'card',
+                        products: props.cart_items,
+                        ...options
+                    }).then(res => {
+                        return res;
+                    }).catch(error => {
+                        console.error('Error: ', error.response, error.response?.data)
+                        payment_initiated.value = false
+
+                        throw error;
+                    })
+                default:
+                    return await HttpRequest.post(initiate_payment.url(), {
+                        provider: 'card',
+                        products: props.cart_items,
+                        ...options
+                    }).then(res => {
+                        return res;
+                    }).catch(error => {
+                        console.error('Error: ', error.response, error.response?.data)
+                        payment_initiated.value = false
+
+                        throw error;
+                    })
+            }
         case 'paypal':
             return await HttpRequest.post(initiate_payment.url(), {
                 provider: 'paypal',
@@ -458,6 +490,7 @@ function createPaddle() {
                                         </svg>
     
                                         <CreditCard v-if="tab === 'card'" :size="32" />
+                                        <Cross v-if="tab === 'card:cybersource-unified'" :size="32" />
     
                                         <PaddleLogo v-if="tab === 'paddle'"  :svg_height="30" />
                                         <!-- <img v-if="tab === 'paddle'" alt="Paddle logo" loading="lazy" width="105" height="32" decoding="async" data-nimg="1" style="color:transparent" src="https://www.paddle.com/_next/static/media/logo-primary.1520b460.svg"> -->
@@ -611,6 +644,10 @@ function createPaddle() {
 
                         <article v-show="currentTab === 'card'" class="">
                             <PaymentCard :initiate-payment="initiatePayment"/>
+                        </article>
+
+                        <article v-show="currentTab === 'card:cybersource-unified'" class="">
+                            <CybersourceUnified :initiate-payment="initiatePayment"/>
                         </article>
                     </div>
                     

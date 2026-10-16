@@ -109,7 +109,7 @@ class PayPalHandler extends PaymentProviderHandler
     }
 
     #[\Override]
-    public static function completePaymentWithToken(Request $request, CompletePaymentWithToken $action): Response | Responsable
+    public static function completePaymentWithToken(Request $request, CompletePaymentWithToken $action): Response|Responsable
     {
         // TRUNCATE TABLE billable_payment_methods RESTART IDENTITY CASCADE;
         $provider = $request->query('provider');
@@ -219,7 +219,7 @@ class PayPalHandler extends PaymentProviderHandler
     }
 
     #[\Override]
-    public static function startSubscriptionWithToken(Request $request, StartSubscriptionWithToken $action): Response | Responsable 
+    public static function startSubscriptionWithToken(Request $request, StartSubscriptionWithToken $action): Response|Responsable 
     {
         $provider  = $request->query('provider');
         $token     = $request->input('token');
@@ -316,7 +316,7 @@ class PayPalHandler extends PaymentProviderHandler
     }
 
     #[\Override]
-    public static function initializePayment(Request $request, InitializePayment $action): Response
+    public static function initializePayment(Request $request, InitializePayment $action): Response|Responsable
     {
         $userId = $request->user()->id;
 
@@ -409,7 +409,7 @@ class PayPalHandler extends PaymentProviderHandler
     }
 
    #[\Override]
-    public static function completePayment(Request $request, CompletePayment $action): Response | Responsable
+    public static function completePayment(Request $request, CompletePayment $action): Response|Responsable
     {
         $provider         = $request->query('provider');
         $token            = $request->input('token');
@@ -588,7 +588,7 @@ class PayPalHandler extends PaymentProviderHandler
     }
 
     #[\Override]
-    public static function startSubscription(Request $request, StartSubscription $action): Response | Responsable
+    public static function startSubscription(Request $request, StartSubscription $action): Response|Responsable
     {
         $data = $request->validate([
             'provider' => [new Enum(PaymentProvider::class), 'required', function(string $attribute, mixed $value, \Closure $fail) {
