@@ -90,7 +90,15 @@ const paddle = ref<Paddle | null>(null);
 
 const initiatePayment = async (provider: string, options: PaymentOptions = {} ) => {
 
-    payment_initiated.value = true
+    if (
+        provider === 'card' 
+        && ['cybersource_unified_checkout', 'cybersource_click_to_pay'].includes(options?.card_gateway ?? '')
+        && options?.card_gateway_phase === 1
+    ) {
+        payment_initiated.value = false
+    } else {
+        payment_initiated.value = true
+    }
 
     switch(provider) {
 
