@@ -1953,16 +1953,16 @@
         },
         {
             "name": "laravel/wayfinder",
-            "version": "v0.1.22",
+            "version": "v0.1.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/wayfinder.git",
-                "reference": "13cae0fad48009925f05f0a1d3edb13476560fa0"
+                "reference": "e7b0914d194201e54ba320ef38137b47a7daca98"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/wayfinder/zipball/13cae0fad48009925f05f0a1d3edb13476560fa0",
-                "reference": "13cae0fad48009925f05f0a1d3edb13476560fa0",
+                "url": "https://api.github.com/repos/laravel/wayfinder/zipball/e7b0914d194201e54ba320ef38137b47a7daca98",
+                "reference": "e7b0914d194201e54ba320ef38137b47a7daca98",
                 "shasum": ""
             },
             "require": {
@@ -2015,7 +2015,7 @@
                 "issues": "https://github.com/laravel/wayfinder/issues",
                 "source": "https://github.com/laravel/wayfinder"
             },
-            "time": "2026-10-15T13:18:12+00:00"
+            "time": "2026-10-16T14:24:32+00:00"
         },
         {
             "name": "league/commonmark",
@@ -2396,20 +2396,21 @@
         },
         {
             "name": "league/uri",
-            "version": "7.8.1",
+            "version": "7.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/uri.git",
-                "reference": "08cf38e3924d4f56238125547b5720496fac8fd4"
+                "reference": "fcc872a3d872aa13f935e0cd1887b9abb06da07f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/uri/zipball/08cf38e3924d4f56238125547b5720496fac8fd4",
-                "reference": "08cf38e3924d4f56238125547b5720496fac8fd4",
+                "url": "https://api.github.com/repos/thephpleague/uri/zipball/fcc872a3d872aa13f935e0cd1887b9abb06da07f",
+                "reference": "fcc872a3d872aa13f935e0cd1887b9abb06da07f",
                 "shasum": ""
             },
             "require": {
-                "league/uri-interfaces": "^7.8.1",
+                "ext-mbstring": "*",
+                "league/uri-interfaces": "^7.9.0",
                 "php": "^8.1",
                 "psr/http-factory": "^1"
             },
@@ -2482,7 +2483,7 @@
                 "docs": "https://uri.thephpleague.com",
                 "forum": "https://thephpleague.slack.com",
                 "issues": "https://github.com/thephpleague/uri-src/issues",
-                "source": "https://github.com/thephpleague/uri/tree/7.8.1"
+                "source": "https://github.com/thephpleague/uri/tree/7.9.0"
             },
             "funding": [
                 {
@@ -2490,20 +2491,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-03-15T20:22:25+00:00"
+            "time": "2026-10-16T15:19:33+00:00"
         },
         {
             "name": "league/uri-interfaces",
-            "version": "7.8.1",
+            "version": "7.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/uri-interfaces.git",
-                "reference": "85d5c77c5d6d3af6c54db4a78246364908f3c928"
+                "reference": "eb5f6d24e6a4fe0a8e9c78ded4eb1dfff1404f58"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/uri-interfaces/zipball/85d5c77c5d6d3af6c54db4a78246364908f3c928",
-                "reference": "85d5c77c5d6d3af6c54db4a78246364908f3c928",
+                "url": "https://api.github.com/repos/thephpleague/uri-interfaces/zipball/eb5f6d24e6a4fe0a8e9c78ded4eb1dfff1404f58",
+                "reference": "eb5f6d24e6a4fe0a8e9c78ded4eb1dfff1404f58",
                 "shasum": ""
             },
             "require": {
@@ -2566,7 +2567,7 @@
                 "docs": "https://uri.thephpleague.com",
                 "forum": "https://thephpleague.slack.com",
                 "issues": "https://github.com/thephpleague/uri-src/issues",
-                "source": "https://github.com/thephpleague/uri-interfaces/tree/7.8.1"
+                "source": "https://github.com/thephpleague/uri-interfaces/tree/7.9.0"
             },
             "funding": [
                 {
@@ -2574,7 +2575,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-03-08T20:05:35+00:00"
+            "time": "2026-10-16T15:19:33+00:00"
         },
         {
             "name": "livewirez/livewirez-billing-laravel",
@@ -2633,16 +2634,16 @@
         },
         {
             "name": "livewirez/webauthn-laravel",
-            "version": "v0.1.62",
+            "version": "v0.1.64",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Livewirez/webauthn-laravel.git",
-                "reference": "fc0a81c36866fbde52b8da467247e13592eca27a"
+                "reference": "74d76017574e1f758371f0f624c7a398e4a37ffb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Livewirez/webauthn-laravel/zipball/fc0a81c36866fbde52b8da467247e13592eca27a",
-                "reference": "fc0a81c36866fbde52b8da467247e13592eca27a",
+                "url": "https://api.github.com/repos/Livewirez/webauthn-laravel/zipball/74d76017574e1f758371f0f624c7a398e4a37ffb",
+                "reference": "74d76017574e1f758371f0f624c7a398e4a37ffb",
                 "shasum": ""
             },
             "require": {
@@ -2681,9 +2682,9 @@
             "description": "A laravel package for authenticating with webauthn passkeys on laravel applications.",
             "support": {
                 "issues": "https://github.com/Livewirez/webauthn-laravel/issues",
-                "source": "https://github.com/Livewirez/webauthn-laravel/tree/v0.1.62"
+                "source": "https://github.com/Livewirez/webauthn-laravel/tree/v0.1.64"
             },
-            "time": "2026-10-16T09:16:13+00:00"
+            "time": "2026-10-16T16:54:20+00:00"
         },
         {
             "name": "monolog/monolog",
