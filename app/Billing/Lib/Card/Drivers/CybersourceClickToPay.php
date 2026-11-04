@@ -49,8 +49,10 @@ class CybersourceClickToPay extends CybersourceUnifiedCheckout
                 'requestPhone' => false,
                 'requestShipping' => data_get($this->options['capture_mandate'], 'request_shipping', false),
                 'showAcceptedNetworkIcons' => true,
-                'shipToCountries' => array_filter(
-                    array_unique([$this->options['country'] ?? $order->billTo['country'] ?? null, ...$this->getShipToCountries($this->options['capture_mandate'])])
+                'shipToCountries' => array_values(
+                    array_filter(
+                        array_unique([$this->options['country'] ?? $order->billTo['country'] ?? null, ...$this->getShipToCountries($this->options['capture_mandate'])])
+                    )
                 ),
             ],
             'completeMandate' => $mode === 'complete' ? array_filter([

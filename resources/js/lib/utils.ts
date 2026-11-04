@@ -242,7 +242,7 @@ export class HttpRequest {
                         resolve(http_reponse);
                     
                     } else if (xhr.status >= 300 && xhr.status < 400) {
-                        console.log('Rediecting.......')
+                        console.log('Redirecting.......')
 
                         const headers = new Headers(resHeaders);
 

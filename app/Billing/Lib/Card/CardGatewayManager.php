@@ -35,6 +35,12 @@ class CardGatewayManager
     /** @var array<string, CardGateway> */
     protected array $resolved = [];
 
+    /**
+     * Add Custom drivers
+     * @param string $driver
+     * @param Closure(array): CardGateway $creator
+     * @return void
+     */
     public static function extend(string $driver, Closure $creator): void
     {
         static::$creators[$driver] = $creator;

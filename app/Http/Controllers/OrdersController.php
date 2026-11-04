@@ -97,7 +97,7 @@ class OrdersController extends Controller
 
         $validated = $request->validate([
             'provider' => [new Enum(PaymentProvider::class), 'required'],
-            'card_gateway' => ['nullable', 'string',  Rule::in(['cybersource_unified_checkout', 'cybersource_click_to_pay']),],
+            'card_gateway' => ['nullable', 'string',  Rule::in(['cybersource', 'cybersource_unified_checkout', 'cybersource_click_to_pay']),],
             'card_gateway_phase' => ['int', 'required_if:card_gateway,cybersource_unified_checkout,cybersource_click_to_pay'],
             'products' => ['required', 'array'],
             'products.*' => ['required', 'array', 'required_array_keys:product,quantity'],
