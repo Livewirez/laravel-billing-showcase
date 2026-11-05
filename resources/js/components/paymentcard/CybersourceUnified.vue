@@ -144,6 +144,8 @@ const createForm = () => {
                             case 'created':
                             case 'approved':
 
+                                errors.value = null;
+
                                 const completeOrderData =  {
                                     provider: 'card', 
                                     card_gateway: 'cybersource_unified_checkout',
@@ -182,7 +184,7 @@ const createForm = () => {
                 }
 
             } catch (error) {
-                 console.error('[Something went wrong]', error)
+                console.error('[Something went wrong]', error)
             }
             
         };
